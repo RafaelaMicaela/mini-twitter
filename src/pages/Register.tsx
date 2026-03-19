@@ -1,13 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useRegister, RegisterSchema } from "../hooks/useAuth";
+import { useRegister, type RegisterSchema } from "../hooks/useAuth";
 import { z } from "zod";
+import { User, Mail, Eye } from "lucide-react";
 
 const registerSchema = z.object({
-  name: z.string().min(3),
-  email: z.string().email(),
-  password: z.string().min(6),
+  name: z.string().min(3, "O nome deve ter no mínimo 3 caracteres"),
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
 });
 
 export default function Register() {
@@ -30,83 +31,113 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">Register</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--color-twitter-bg)] text-white px-4">
+      <div className="w-full max-w-sm flex flex-col items-center">
+        {/* Logo */}
+        <h1 className="text-3xl font-bold mb-10 tracking-tight">Mini Twitter</h1>
+
+        {/* Tabs */}
+        <div className="w-full flex border-b border-[var(--color-twitter-border)] mb-8">
+          <Link
+            to="/login"
+            className="flex-1 text-center py-3 text-sm font-semibold text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="flex-1 text-center py-3 text-sm font-semibold text-white border-b-2 border-[var(--color-twitter-primary)]"
+          >
+            Cadastrar
+          </Link>
+        </div>
+
+        {/* Welcome Text */}
+        <div className="w-full mb-6">
+          <h2 className="text-2xl font-bold mb-2">Olá, vamos começar!</h2>
+          <p className="text-gray-400 text-sm">Por favor, insira os dados solicitados para fazer cadastro.</p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Name
+            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+              Nome
             </label>
-            <input
-              id="name"
-              type="text"
-              {...register("name")}
-              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            />
-            {errors.name && (
-              <p className="mt-2 text-sm text-red-600">{errors.name.message}</p>
-            )}
+            <div className="relative">
+              <input
+                id="name"
+                type="text"
+                placeholder="Insira o seu nome"
+                {...register("name")}
+                className="w-full pl-3 pr-10 py-2.5 bg-[var(--color-twitter-surface)] border border-[var(--color-twitter-border)] rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-twitter-primary)] focus:ring-1 focus:ring-[var(--color-twitter-primary)] transition-colors text-sm"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-gray-500" />
+              </div>
+            </div>
+            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
           </div>
+
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              E-mail
             </label>
-            <input
-              id="email"
-              type="email"
-              {...register("email")}
-              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            />
-            {errors.email && (
-              <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-            )}
+            <div className="relative">
+              <input
+                id="email"
+                type="email"
+                placeholder="Insira o seu e-mail"
+                {...register("email")}
+                className="w-full pl-3 pr-10 py-2.5 bg-[var(--color-twitter-surface)] border border-[var(--color-twitter-border)] rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-twitter-primary)] focus:ring-1 focus:ring-[var(--color-twitter-primary)] transition-colors text-sm"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-gray-500" />
+              </div>
+            </div>
+            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
           </div>
+
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Password
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              Senha
             </label>
-            <input
-              id="password"
-              type="password"
-              {...register("password")}
-              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-            />
-            {errors.password && (
-              <p className="mt-2 text-sm text-red-600">
-                {errors.password.message}
-              </p>
-            )}
+            <div className="relative">
+              <input
+                id="password"
+                type="password"
+                placeholder="Insira a sua senha"
+                {...register("password")}
+                className="w-full pl-3 pr-10 py-2.5 bg-[var(--color-twitter-surface)] border border-[var(--color-twitter-border)] rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-twitter-primary)] focus:ring-1 focus:ring-[var(--color-twitter-primary)] transition-colors text-sm"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <Eye className="h-5 w-5 text-gray-500" />
+              </div>
+            </div>
+            {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
           </div>
+
           {error && (
-            <p className="text-sm text-red-600">
-              {error.response?.data?.message || "An error occurred"}
+            <p className="text-sm text-red-500">
+              {error.response?.data?.message || "Ocorreu um erro ao registrar"}
             </p>
           )}
-          <div>
+
+          <div className="pt-4">
             <button
               type="submit"
               disabled={isPending}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="w-full py-2.5 px-4 bg-[var(--color-twitter-primary)] hover:bg-[var(--color-twitter-primary-hover)] text-white font-semibold rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-twitter-primary)] focus:ring-offset-[var(--color-twitter-bg)] transition-colors disabled:opacity-50 text-sm"
             >
-              {isPending ? "Registering..." : "Register"}
+              {isPending ? "Aguarde..." : "Continuar"}
             </button>
           </div>
         </form>
-        <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-          Already have an account?{" "}
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Login
-          </Link>
+
+        <p className="mt-8 text-xs text-center text-gray-500 px-4">
+          Ao clicar em continuar, você concorda com nossos{" "}
+          <a href="#" className="underline hover:text-gray-300 transition-colors">Termos de Serviço</a> e{" "}
+          <a href="#" className="underline hover:text-gray-300 transition-colors">Política de Privacidade</a>.
         </p>
       </div>
     </div>

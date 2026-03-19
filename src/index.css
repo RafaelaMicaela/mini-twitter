@@ -1,3 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-twitter-bg: #0B101A;
+  --color-twitter-surface: #151B26;
+  --color-twitter-primary: #08A0F7;
+  --color-twitter-primary-hover: #078cd9;
+  --color-twitter-border: #2B3545;
+  --font-inter: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-twitter-bg);
+    color: white;
+    font-family: var(--font-inter);
+    -webkit-font-smoothing: antialiased;
+  }
+}

@@ -1,11 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  useUpdatePost,
-  UpdatePostSchema,
-  Post,
-} from "../hooks/usePosts";
+import { useUpdatePost, type UpdatePostSchema, type Post, } from "../hooks/usePosts";
 
 const updatePostSchema = z.object({
   title: z.string().min(1, "Title is required"),

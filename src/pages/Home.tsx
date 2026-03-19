@@ -1,80 +1,80 @@
-import { useNavigate } from "react-router-dom";
-import { useLogout } from "../hooks/useAuth";
 import { usePosts } from "../hooks/usePosts";
 import PostCard from "../components/PostCard";
 import { useState } from "react";
 import CreatePostForm from "../components/CreatePostForm";
-import ThemeSwitcher from "../components/ThemeSwitcher";
+import Header from "../components/Header";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Home() {
-  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { data, isLoading, error } = usePosts(page, search);
-  const { mutate: logout } = useLogout();
-
-  const handleLogout = () => {
-    logout(undefined, {
-      onSuccess: () => {
-        localStorage.removeItem("token");
-        navigate("/login");
-      },
-    });
-  };
 
   return (
-    <div className="container p-4 mx-auto bg-gray-50 dark:bg-gray-900">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Home</h1>
-        <div className="flex items-center space-x-4">
-          <ThemeSwitcher />
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-          >
-            Logout
-          </button>
+    <div className="min-h-screen bg-[var(--color-twitter-bg)] text-white">
+      <Header search={search} setSearch={setSearch} />
+      
+      <main className="max-w-2xl mx-auto pt-6 px-4 pb-20">
+        <CreatePostForm />
+
+        {/* Posts Status */}
+        {isLoading && <p className="text-gray-400 mt-4 text-center">Carregando posts...</p>}
+        {error && <p className="text-red-500 mt-4 text-center">Erro ao carregar posts</p>}
+
+        {/* Posts Feed */}
+        <div className="mt-6 flex flex-col gap-4">
+          {data?.posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
         </div>
-      </div>
 
-      <CreatePostForm />
+        {/* Pagination */}
+        {data?.totalPages && data.totalPages > 1 && (
+          <div className="flex justify-center items-center mt-12 gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-2 mr-2 text-gray-500 hover:text-white disabled:opacity-30 disabled:hover:text-gray-500 transition-colors focus:outline-none"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
 
-      <div className="my-4">
-        <input
-          type="text"
-          placeholder="Search posts..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-2 border rounded-md bg-white dark:bg-gray-800 dark:text-gray-100"
-        />
-      </div>
+            {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((p) => {
+              if (p === 1 || p === data.totalPages || (p >= page - 1 && p <= page + 1)) {
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-all focus:outline-none ${
+                      page === p
+                        ? "bg-[var(--color-twitter-primary)] text-white shadow-[0_0_12px_rgba(8,160,247,0.5)]"
+                        : "text-gray-400 hover:text-white hover:bg-[var(--color-twitter-surface)]"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              }
+              if (p === page - 2 || p === page + 2) {
+                return (
+                  <span key={p} className="text-gray-600 px-1">
+                    ...
+                  </span>
+                );
+              }
+              return null;
+            })}
 
-      {isLoading && <p className="text-gray-900 dark:text-gray-100">Loading posts...</p>}
-      {error && <p className="text-red-500">Error loading posts</p>}
-
-      <div>
-        {data?.posts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </div>
-
-      <div className="flex justify-between my-4">
-        <button
-          onClick={() => setPage(page - 1)}
-          disabled={page === 1}
-          className="px-4 py-2 font-bold text-white bg-blue-500 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <span className="text-gray-900 dark:text-gray-100">Page {page} of {data?.totalPages}</span>
-        <button
-          onClick={() => setPage(page + 1)}
-          disabled={page === data?.totalPages}
-          className="px-4 py-2 font-bold text-white bg-blue-500 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+            <button
+              onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
+              disabled={page === data.totalPages}
+              className="p-2 ml-2 text-gray-500 hover:text-white disabled:opacity-30 disabled:hover:text-gray-500 transition-colors focus:outline-none"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
